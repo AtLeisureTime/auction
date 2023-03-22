@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ lot.description }}
+{% endblock %}
+
+{% block content %}
+<div id="auction-container">
+  <div id="lot-info">
+    {% if lot.imageLeft %}
+    <img src="{{ lot.imageLeft.url }}"><br>
+    {% endif %}
+    {% if lot.imageRight %}
+    <img src="{{ lot.imageRight.url }}">
+    {% endif %}
+    <h3>{{ lot.description }}</h3>
+    <h4>
+      <span class="descriptn-label">Auction state: </span>
+      <span class="descriptn-value">{{ lot.get_auctionState_display }}</span>.<br>
+      <span class="descriptn-label">Auction time: </span>
+      <span class="descriptn-value">{{ lot.startTime|date:'M d, Y, H:i:s O' }} - {{ lot.endTime|date:'M d, Y, H:i:s O' }}</span>.<br>
+      <span class="descriptn-label">Start price: </span>
+      <span class="descriptn-value">{{ lot.startPrice }} &#x20BD;</span>.<br>
+      <span class="descriptn-label">Number of stakes: </span>
+      <span id="stake-table-len" class="descriptn-value">{{ stakes|length }}</span>.
+    </h4>
+  </div>
+
+  <div id="stake-board">
+    {% if request.user.is_authenticated and lot.auctionState == "ST" %}
+    <div id="stake-actions">
+      <div id="stake-wrapper">
+        <p>
+          <span class="stake-comment">Next minimal stake:</span>
+          <span id="stake-next-min">{{ nextMinStake }}</span>
+        </p>
+        <input id="min-stake-submit" type="submit" value="Minimal Stake">
+        <input id="any-min-stake-submit" type="submit"
+        value="Minimal Stake&#13;&#10;Exceeding Any Other Stake">
+
+        <p><span class="stake-comment">Your next stake:</span></p>
+        <input id="stake-input" type="text">
+        <input id="stake-submit" type="submit" value="My Stake">
+      </div>
+      <div id="stake-log-messages">
+        <h4>
+          <div id="stake-submit-error" class="stake-submit-error"></div>
+        </h4>
+        <p>
+          <span class="stake-comment">Submit status:</span>
+          <span id="stake-submit-status" class="stake-submit-state">Ready for your next stake.</span>
+        </p>
+      </div>
+    </div>
+    {% elif lot.auctionState == "ST" %}
+    <div class="login-link">
+      <a href="{% url "account:login" %}?next={{request.get_full_path}}" class="button">
+        Log in to stake
+      </a>
+    </div>
+    {% endif %}
+    <table id="stake-table">
+      <thead>
+        <tr><th colspan="3">All stakes</th></tr>
+        <tr>
+          {% for head in stakeFields %}
+          <th>{{ head }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody id="stake-table-body">
+        {% for row in stakes %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<br>
+<p>© 2023 Copyright</p>
+{% endblock %}
+
+{% block include_js %}
+{{ lot.id|json_script:"lot-id" }}
+{{ request.user.id|json_script:"user-id" }}
+{{ wsProtocol|json_script:"wsProtocol" }}
+{% endblock %}
+
+{% block domready %}
+// submit statuses
+const PROCESSING = "Processing asynchronously..."
+const READY = "Ready for your next stake."
+const CANT_SUBMIT = "Can't submit new stake.";
+
+function canSubmit() {
+  /* Return false if user can't make new stake at the current moment.*/
+  const submitStatus = document.getElementById('stake-submit-status');
+  if (submitStatus.textContent === PROCESSING) {
+    return false;
+  }
+  const submitError = document.getElementById('stake-submit-error');
+  if (submitError.textContent === "Auction isn't in progress!") {
+    submitStatus.textContent = CANT_SUBMIT;
+    return false;
+  }
+  submitStatus.textContent = PROCESSING;
+
+  return true;
+}
+
+function removeThousandSeparators(price) {
+  return price.replace(/,(?=\d{3})/g, '')
+}
+
+function addStakeBoardLogic() {
+  /* Add possibility make stakes and see stakes of other users.*/
+  const lotId = JSON.parse(document.getElementById('lot-id').textContent);
+  const wsProtocol = JSON.parse(document.getElementById('wsProtocol').textContent);  
+  const url = wsProtocol + '://' + window.location.host + '/ws/stakes/lot/' + lotId + '/';
+  console.log(url)
+  const auctnSocket = new WebSocket(url);
+
+  auctnSocket.onmessage = function(event) {
+    /* Show your stake submit status and submit errors, update stakes table when any auction user
+       make stake. Update next minimal stake and number of stakes elements.
+    */
+    const data = JSON.parse(event.data);
+    console.log(data);
+
+    // don't show input errors from other users
+    const curUserId = document.getElementById('user-id').textContent;
+    if (data.stakeSubmitError && curUserId != data.sender) {
+      return;
+    }
+
+    const submitStatus = document.getElementById('stake-submit-status');
+    const submitError = document.getElementById('stake-submit-error'); 
+    submitStatus.textContent = READY;
+    if (data.stakeSubmitError) {
+      submitError.textContent = data.stakeSubmitError;    
+      return;
+    }
+    else {
+      submitError.textContent = "";
+    }
+
+    let nextMinStake = document.getElementById('stake-next-min');
+    nextMinStake.textContent = data.nextMinStake;
+
+    const stakesTable = document.getElementById('stake-table-body');
+    stakesTable.innerHTML = '<tr><td>' + data.newStake.time + '</td><td>' +
+                            data.newStake.user + '</td><td>' +
+                            data.newStake.stakeValue + '</td></tr>' + stakesTable.innerHTML;
+
+    const stakesTableLen = document.getElementById('stake-table-len');
+    stakesTableLen.textContent = (parseInt(stakesTableLen.textContent) + 1).toString()
+  };
+
+  auctnSocket.onclose = function(event) {
+    console.log('Auctn socket closed');
+  };
+
+  const submitMinStakeBtn = document.getElementById('min-stake-submit');
+  submitMinStakeBtn.addEventListener('click', function(event) {
+    if (!canSubmit()) { return; }
+    let nextMinStakeValue = document.getElementById('stake-next-min').textContent;
+    nextMinStakeValue = removeThousandSeparators(nextMinStakeValue)
+    console.log('nextMinStakeValue:', nextMinStakeValue)
+    auctnSocket.send(JSON.stringify({'inputStake': nextMinStakeValue}));
+  });
+
+  const submitAnyMinStakeBtn = document.getElementById('any-min-stake-submit');
+  submitAnyMinStakeBtn.addEventListener('click', function(event) {
+    if (!canSubmit()) { return; }
+    auctnSocket.send('{}');
+  });
+
+  const stakeInput = document.getElementById('stake-input');
+  const submitStakeBtn = document.getElementById('stake-submit');
+
+  submitStakeBtn.addEventListener('click', function(event) {
+    const inputStake = stakeInput.value;
+    if(inputStake) {
+      if (!canSubmit()) { return; }
+      auctnSocket.send(JSON.stringify({'inputStake': inputStake}));
+      stakeInput.value = '';
+      stakeInput.focus();
+    }
+  });
+
+  stakeInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      submitStakeBtn.click();
+    }
+  });
+
+  stakeInput.focus();
+}
+
+if (document.getElementById('stake-input') !== null) {
+  addStakeBoardLogic();
+}
+{% endblock %}

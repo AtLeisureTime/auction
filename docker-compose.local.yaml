@@ -1,0 +1,31 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .live.env
+
+  redis:
+    image: redis:7.0.4
+    ports:
+      - "6379:6379"
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    restart: always
+    volumes:
+      - ./data/redis:/data
+      - ./data/redis.conf:/usr/local/etc/redis/redis.conf
+    env_file:
+      - .live.env
+
+  db:
+    image: postgres:14.5
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - .live.env

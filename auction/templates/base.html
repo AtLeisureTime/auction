@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static "css/base.css" %}">
+</head>
+
+<body>
+  <div id="header">    
+    <ul class="menu">
+      {% if request.user.is_authenticated %}
+      <li {% if section == "home" %}class="selected" {% endif %}>
+        <a href="{% url "home" %}">Home</a>
+      </li>
+      <li {% if section == "dashboard" %}class="selected" {% endif %}>
+        <a href="{% url "account:dashboard" %}">Account</a>
+      </li>
+      {% endif %}
+      <li {% if section == "lots" %}class="selected" {% endif %}>
+        <a href="{% url "lot:lotList" %}">Lots</a>
+      </li>
+    </ul>    
+    <span class="user">
+      {% if request.user.is_authenticated %}
+      Hello {{ request.user.first_name|default:request.user.username }},
+      <a href="{% url "account:logout" %}">Logout</a>
+      {% else %}
+      <a href="{% url "account:login" %}?next={{request.get_full_path}}">Log-in</a>
+      {% endif %}
+    </span>
+  </div>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">
+      {{ message|safe }}
+      <a href="#" class="close">x</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <div id="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+  {% block include_js %}
+  {% endblock %}
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // console.log('DOM fully loaded and parsed');
+        {% block domready %}
+        {% endblock %}
+      });
+  </script>
+</body>
+</html>

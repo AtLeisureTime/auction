@@ -1,0 +1,378 @@
+@import url(//fonts.googleapis.com/css?family=Muli);
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: helvetica, sans-serif;
+}
+
+p {
+    line-height: 1.0;
+}
+
+a:hover {
+    color: #ae641b;
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Muli', sans-serif;
+    font-weight: normal;
+}
+
+h1 {
+    border-bottom: 1px solid #bbb;
+    padding: 0 0 10px 0;
+    margin: 10px 0 20px 0;
+}
+
+h2 {
+    margin: 10px 0 10px;
+}
+
+#header {
+    padding: 10px 100px;
+    font-size: 16px;
+    background: #ad7aff;
+    color: #fff;
+    border-bottom: 2px solid #532d91;
+    overflow: auto;
+}
+
+#header ul.menu {
+    list-style: none;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+#header ul.menu li {
+    float: left;
+    padding: 4px 10px;
+}
+
+#header ul.menu li.selected a,
+#header ul.menu li.selected a:hover {
+    color: #eeee01;
+    font-weight: bold;
+}
+
+#header a {
+    color: #f3f7cc;
+}
+
+#header a:hover {
+    color: #fff;
+}
+
+#header .user {
+    float: right;
+    padding-top: 4px;
+}
+
+#header .search {
+    float: right;
+    display: flex;
+    padding-bottom: 0px;
+}
+
+#content {
+    padding: 0px 30px;
+}
+
+/* forms */
+form {
+    overflow: auto;
+}
+
+form p {
+    width: 100%;
+    overflow: auto;
+}
+
+label {
+    float: left;
+    clear: both;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+input,
+textarea {
+    clear: both;
+    float: left;
+    margin: 0px;
+    background: #efefef;
+    border: 0;
+    padding: 5px 5px;
+    font-size: 14px;
+}
+
+input[type=submit],
+a.button {
+    font-weight: bold;
+    background: #6511ed;
+    color: #fff;
+    padding: 10px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.errorlist {
+    color: #cc0033;
+    float: left;
+    clear: both;
+    padding-left: 10px;
+}
+
+.helptext {
+    margin: 10px 0 10px 0;
+    color: #7c7c7c;
+    clear: both;
+    float: left;
+    font-size: 13px;
+}
+
+/* messages */
+ul.messages {
+    margin: 10px 100px;
+    padding: 0;
+    list-style-type:
+        none;
+}
+
+ul.messages li.success,
+ul.messages li.warning,
+ul.messages li.error,
+ul.messages li.info {
+    margin: 0;
+    padding: 14px 20px;
+    list-style: none;
+    color: #fff;
+}
+
+ul.messages li.success {
+    background: #81ce81;
+}
+
+ul.messages li.success a {
+    color: #0ac33e;
+}
+
+ul.messages li.error {
+    background: #a30029;
+    color: #e9828e;
+}
+
+ul.messages li.error a {
+    color: #e9828e;
+}
+
+ul.messages li.info {
+    background: #faffae;
+    color: #696b4e;
+}
+
+ul.messages li.info a {
+    color: #1586de;
+}
+
+ul.messages li.warning {
+    background: #de9404;
+}
+
+ul.messages li.warning a {
+    color: #f49000;
+}
+
+ul.messages li a.close {
+    margin: 0;
+    float: right;
+    opacity: 1;
+    border: 0;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.login-form {
+    float: left;
+}
+
+/* images */
+
+.image-preview,
+.image-detail {
+    max-width: 300px;
+    float: left;
+    margin: 0 20px 20px 0;
+}
+
+.image-detail {
+    margin-top: 20px;
+}
+
+.image-info div {
+    padding: 20px 0;
+    overflow: auto;
+}
+
+#image-list {
+    overflow: hidden;
+}
+
+#image-list .image {
+    float: left;
+    width: 220px;
+    height: 300px;
+    margin: 0 10px 10px 10px;
+    border-top: 8px solid #12c064;
+    background: #eee;
+}
+
+#image-list img {
+    width: 220px;
+    height: 220px;
+}
+
+#image-list .info {
+    padding: 10px;
+}
+
+#image-list .info a {
+    color: #333;
+}
+
+/* actions */
+.action {
+    clear: both;
+    overflow: auto;
+}
+
+.action .images {
+    float: left;
+    margin: 0 10px 10px 0;
+}
+
+.action .date {
+    font-style: italic;
+    color: #ccc;
+}
+
+table,
+td {
+    border: 1px solid;
+    border-collapse: collapse;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    border: 1px solid;
+    border-collapse: collapse;
+    padding: 10px;
+    text-align: center;
+    background-color: #afceff;
+}
+
+#auction-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+#lot-info {
+    text-align: center;
+    margin: 10px;
+    padding: 10px;
+}
+
+#lot-info img {
+    width: 350px;
+}
+
+#lot-list {
+    margin: 10px;
+    padding: 10px;
+}
+
+#lot-list img {
+    width: 200px;
+}
+
+#lot-list-descriptn {
+    width: 800px;
+    padding: 0px 0px 0px 30px;
+}
+
+.text-indent {
+    text-align: left;
+    padding: 0px 0px 0px 50px;
+}
+
+#stake-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 210px);
+    grid-template-rows: repeat(2, 60px);
+    grid-gap: 10px;
+    text-align: right;
+}
+
+#stake-actions {
+    margin: 10px;
+    padding: 10px;
+    background-color: #afceff;
+}
+
+.login-link {
+    padding: 20px;
+}
+
+#stake-log-messages {
+    text-align: center;
+}
+
+.stake-comment {
+    font-style: italic;
+}
+
+#stake-next-min {
+    font-weight: bold;
+}
+
+.stake-submit-error {
+    color: rgb(200, 0, 0);
+}
+
+.stake-submit-state {
+    color: green;
+}
+
+#stake-table {
+    /* align = center */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+.descriptn-label {
+    font-style: italic;
+    padding: 0px 10px 0px 0px;
+}
+
+.descriptn-value {
+    font-weight: bold;
+}
+
+#pagination {
+    text-align: center;
+}
+
+#pagination .selected {
+    font-weight: bold;
+}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load my_tags %}
+
+{% block title %}
+Lots
+{% endblock %}
+
+{% block content %}
+  <div id="header">
+    <ul class="menu">
+      <li {% if auctnState is None %}class="selected" {% endif %}>
+        <a href="{% url "lot:lotList" %}">All</a>
+      </li>
+      {% for stateValue, stateLabel in auctnStates %}
+      <li {% if stateValue == auctnState %}class="selected" {% endif %}>
+        <a href="{% url "lot:lotListByAuctnType" stateValue %}">{{ stateLabel }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    <form method="get" class="search">
+      {{ searchForm.query }}
+      <input type="submit" value="Rank lots">
+    </form>
+  </div>
+  
+  <div id="lot-list">
+    {% for lot in lots %}
+    <div id="auction-container">
+      <div>
+        <a href="{{ lot.get_absolute_url }}">      
+          {% if lot.imageLeft %}
+          <img src="{{ lot.imageLeft.url }}">
+          {% endif %}
+          {% if lot.imageRight %}
+          <img src="{{ lot.imageRight.url }}">
+          {% endif %}
+        </a>        
+      </div>
+      <div id="lot-list-descriptn">
+        <h3>
+          {{ lot.id }}.&nbsp;
+          <a href="{{ lot.get_absolute_url }}">
+            {{ lot.description }}</h3>
+          </a>
+        </h3>
+        <h4 class="text-indent">
+          {% if numStakes|get_by_key:lot.id > 0 %}
+            {% if lot.get_auctionState_display == 'Started' or lot.get_auctionState_display == 'Finished' %}
+              {% with stakeObj=leadingStakes|get_by_key:lot.id %}
+              <span class="descriptn-label">Last stake: </span>
+              <span class="descriptn-value">{{ stakeObj|get_by_key:'stake' }} &#x20BD;</span> at
+              <span class="descriptn-value">{{ stakeObj|get_by_key:'time' }}</span>.<br>
+              <span class="descriptn-label">Leader: </span>
+              <span class="descriptn-value">{{ stakeObj|get_by_key:'username' }}</span>.<br>
+              <span class="descriptn-label">Number of stakes: </span>
+              <span class="descriptn-value">{{ numStakes|get_by_key:lot.id }}</span>.<br>
+              {% endwith %}
+            {% endif %}
+          {% endif %}
+          <span class="descriptn-label">Auction state: </span>
+          <span class="descriptn-value">{{ lot.get_auctionState_display }}</span>.<br>
+          <span class="descriptn-label">Auction time: </span>
+          <span class="descriptn-value">{{ lot.startTime|date:'M d, Y, H:i:s O' }} - {{ lot.endTime|date:'M d, Y, H:i:s O' }}</span>.<br>
+          <span class="descriptn-label">Start price: </span>
+          <span class="descriptn-value">{{ lot.startPrice }} &#x20BD;</span>.
+        </h4>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% include "pagination.html" with object_list=lots%}
+  <br>
+  <p>© 2023 Copyright</p>
+{% endblock %}

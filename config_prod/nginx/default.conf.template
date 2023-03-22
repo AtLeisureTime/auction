@@ -1,0 +1,44 @@
+# upstream for uWSGI
+upstream uwsgi_app {
+    server unix:/tmp/auction/uwsgi_app.sock;
+}
+
+# upstream for Daphne
+upstream daphne {
+    server unix:/tmp/auction/daphne.sock;
+}
+
+server {
+    listen 80;
+    server_name www.auction.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen               443 ssl;
+    ssl_certificate      /code/auction/ssl/auctn.crt;
+    ssl_certificate_key  /code/auction/ssl/auctn.key;
+    server_name  www.auction.com;
+    error_log    stderr warn;
+    access_log   /dev/stdout main;
+
+    location / {
+        include      /etc/nginx/uwsgi_params;
+        uwsgi_pass   uwsgi_app;
+    }
+
+    location /ws/ {
+        proxy_http_version  1.1;
+        proxy_set_header    Upgrade $http_upgrade;
+        proxy_set_header    Connection "upgrade";
+        proxy_redirect      off;
+        proxy_pass          http://daphne;
+    }
+
+    location /static/ {
+        alias /code/auction/static_files_all/;
+    }
+    location /media/ {
+        alias /code/auction/media/;
+    }
+}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% endblock %}
+
+{% block content %}
+<h1>Auction rules</h1>
+<p>
+    Admins create lots and plans auction time for every lot independently. 
+    Lots with "Draft" auction state are invisible for users.<br>
+    Users can make stakes on lot when lot auction is in "Started" state. 
+    Use filters on "Lots" page to view auctions.<br>
+    If there are any not processed stakes of other users in the queue at the current moment, the button "Minimal Stake
+    Exceeding Any Other Stake" make minimal stake exceeding the highest one in the queue.<br>
+    Winner of "Finished" auction is user with the highest stake.
+</p><br>
+<h1>Auction news</h1>
+<p>15/03/2013 - Auction fee is 0,1% this year.</p>
+<br><p>© 2023 Copyright</p>
+{% endblock %}

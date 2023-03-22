@@ -1,0 +1,105 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .live.env
+
+  redis:
+    image: redis:7.0.4
+    ports:
+      - "6379:6379"
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    restart: always
+    volumes:
+      - ./data/redis:/data
+      - ./data/redis.conf:/usr/local/etc/redis/redis.conf
+    env_file:
+      - .live.env
+
+  db:
+    image: postgres:14.5
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - .live.env
+
+  web:
+    build:
+      context: .
+      dockerfile: ./prod/web.Dockerfile
+    command:
+       bash -c "./prod/wait-for-it.sh db:5432 -- uwsgi --ini /code/config_prod/uwsgi/uwsgi.ini && ./prod/web-docker-entrypoint.sh"
+    restart: always
+    volumes:
+      - .:/code
+      - /tmp/auction:/tmp/auction
+    environment:
+      - DJANGO_SETTINGS_MODULE=auction.settings.prod
+    env_file:
+      - .live.env
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+  daphne:
+    build:
+      context: .
+      dockerfile: ./prod/web.Dockerfile
+    command:
+      [
+        "./prod/wait-for-it.sh",
+        "db:5432",
+        "--",
+        "daphne",
+        "-u",
+        "/tmp/auction/daphne.sock",
+        "auction.asgi:application"
+      ]
+    restart: always
+    volumes:
+      - .:/code
+      - /tmp/auction:/tmp/auction
+    environment:
+      - DJANGO_SETTINGS_MODULE=auction.settings.prod
+    env_file:
+      - .live.env
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./prod/web.Dockerfile
+    command: /bin/sh -c "cd auction/ && celery -A auction worker -l info"
+    restart: always
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=auction.settings.prod
+    env_file:
+      - .live.env
+    depends_on:
+      - web
+
+  nginx:
+    image: nginx:1.23.1
+    restart: always
+    volumes:
+      - ./config_prod/nginx:/etc/nginx/templates
+      - .:/code
+      - /tmp/auction:/tmp/auction
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .live.env

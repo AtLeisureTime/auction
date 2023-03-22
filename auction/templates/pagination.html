@@ -1,0 +1,21 @@
+<div id="pagination">
+    {% if object_list %}
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">1</a>
+        {% endif %}
+        {% if page_obj.previous_page_number != 1 %}
+        <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+        <span class="selected">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+        {% endif %}
+        {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
+        <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    </span>
+    {% else %}
+    <p>No objects!</p>
+    {% endif %}
+</div>
