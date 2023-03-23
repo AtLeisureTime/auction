@@ -1,24 +1,32 @@
 # Auction
 ## Features
 * Auction admin can create/modify/delete lots, stakes, users and their profiles.
-* Unauthenticated Auction users can
-  - view all lots with AuctionState not equal "Draft" using AuctionState filter and description search form ranking lots by search query
+* Unauthenticated auction users can
+  - view all lots with AuctionState not equal to "Draft" using AuctionState filter and description search form ranking lots by search query
   - view stakes made by other users
   - open registration form
-* Authenticated Auction user can also
+* Authenticated auction user can also
   - make stakes on lots with AuctionState "Started"
   - view stakes made by other users on the lot page in real time without refreshing the page
   - edit their profiles and change their passwords
 
 ## Demo video
-Auction admin is editing the auction lot and is launching auction for this lot. When admin sets "Not started" AuctionState, 2 jobs are created - start the auction and finish it at specified time. 2 users are making stakes while auction is in progress.
-<br />https://user-images.githubusercontent.com/16018457/227154695-2f5de556-1cfb-415c-9c28-691512653251.mp4
+* Auction admin is editing the auction lot and is launching auction for this lot. When admin sets "Not started" AuctionState, 2 jobs are created - start the auction and finish it at the specified time. 2 users are making stakes while auction is in progress.
 
-Lot edit error validation, auction state transition validation, lots filter by auction state
-<br />https://user-images.githubusercontent.com/16018457/227154777-d2872fe0-c290-4280-a221-54111873cd21.mp4
+https://user-images.githubusercontent.com/16018457/227154695-2f5de556-1cfb-415c-9c28-691512653251.mp4
 
-Login by username & email, registration, profile editing, password change forms
-<br />https://user-images.githubusercontent.com/16018457/227154828-9295f24a-d3a2-4f9f-a2b3-da6feae97197.mp4
+&nbsp;
+&nbsp;
+* Lot edit error validation, AuctionState transition validation, lots filtering by AuctionState
+
+https://user-images.githubusercontent.com/16018457/227154777-d2872fe0-c290-4280-a221-54111873cd21.mp4
+
+
+&nbsp;
+&nbsp;
+* Login by username & email, registration, profile editing, password change forms
+
+https://user-images.githubusercontent.com/16018457/227154828-9295f24a-d3a2-4f9f-a2b3-da6feae97197.mp4
 
 ## Tech stack
 * Python 3.10
@@ -40,7 +48,7 @@ Login by username & email, registration, profile editing, password change forms
 * Docker
 * Docker compose
 
-### Local Auction run (for development):
+### Local auction run (for development):
 
 * Terminal 1
 ```
@@ -89,7 +97,7 @@ celery -A auction worker -l info
 deactivate
 ```
 
-### Production-like Auction run
+### Production-like auction run
 ```
 git clone https://github.com/AtLeisureTime/auction.git
 cd auction/
