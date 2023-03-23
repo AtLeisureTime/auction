@@ -5,7 +5,7 @@
   - view all lots with AuctionState not equal to "Draft" using AuctionState filter and description search form ranking lots by search query
   - view stakes made by other users
   - open registration form
-* Authenticated auction user can also
+* Authenticated auction users can also
   - make stakes on lots with AuctionState "Started"
   - view stakes made by other users on the lot page in real time without refreshing the page
   - edit their profiles and change their passwords
